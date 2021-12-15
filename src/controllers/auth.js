@@ -41,18 +41,16 @@ const register = function (req, res, next) {
 
 const authenticate = function (req, res, next) {
   try {
-    const { name, password } = req.body;
-    if (!name || !name.length) {
+    if (!req.body.name) {
       return res.status(400).json({
         success: false,
         message: "No username provided",
       });
     }
 
-    console.log(User);
     User.findOne(
       {
-        username: name,
+        username: req.body.name,
       },
       function (err, user) {
         if (err) {
@@ -69,7 +67,7 @@ const authenticate = function (req, res, next) {
           });
         }
 
-        user.checkPassword(password, function (err, check) {
+        user.checkPassword(req.body.password, function (err, check) {
           if (err)
             return res.status(403).json({
               success: false,
