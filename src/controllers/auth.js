@@ -75,7 +75,7 @@ const authenticate = function (req, res, next) {
             });
 
           user.auth(function (err, token) {
-            token.user = TransformUser(user);
+            token.user = user;
             token.success = true;
             console.log("auth token: ", token);
             req.user = token.user;

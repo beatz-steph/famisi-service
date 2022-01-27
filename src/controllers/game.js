@@ -49,9 +49,13 @@ const updateGame = async (req, res, next) => {
 
 const fetchGames = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id).populate("games");
+    const games = await Game.find({
+      $or: [{ player1: req.params.id }, { player2: req.params.id }],
+    }).populate(["player1", "player2"]);
 
-    res.json(user.games);
+    console.log({ games });
+
+    res.json(games);
   } catch (err) {
     next(err);
   }
@@ -71,15 +75,17 @@ const addFriend = async (req, res, next) => {
   try {
     const { friend, id } = req.body;
 
+    const friendInfo = await User.findOne({ username: friend });
+
     const user = await User.findByIdAndUpdate(
       id,
       {
-        $push: { friends: friend },
+        $push: { friends: friendInfo._id },
       },
       { new: true }
     );
 
-    await User.findByIdAndUpdate(friend, {
+    await User.findByIdAndUpdate(friendInfo._id, {
       $push: { friends: id },
     });
 
