@@ -95,7 +95,7 @@ const updateGame = async (req, res, next) => {
         await User.findByIdAndUpdate(updatedGame.player1, {
           $inc: { points: -200 },
         });
-      } else {
+      } else if (winner === "draw") {
         await User.findByIdAndUpdate(updatedGame.player2, {
           $inc: { points: 200 },
         });
