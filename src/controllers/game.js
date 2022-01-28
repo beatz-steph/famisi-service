@@ -24,22 +24,79 @@ const startGame = async (req, res, next) => {
 
 const updateGame = async (req, res, next) => {
   try {
-    const { id, progress } = req.body;
-    if (!progress.player1 || !progress.player2) {
-      return next("Player progress must be included");
+    const { id, player, score } = req.body;
+    console.log({ id, player, score });
+    if (!id || !player || !score) {
+      return next("Incomplete info");
     }
-    const done =
-      progress.player1.length === progress.player2.length &&
-      progress.player1.length === 6;
+
+    let done;
+    let winner = "";
+
+    const { progress } = await Game.findById(id);
+
+    const copy = { ...progress };
+
+    if (player === "player1") {
+      progress.player2 !== "null"
+        ? (() => {
+            done = true;
+            copy[player] = score;
+          })()
+        : (done = false);
+    } else {
+      progress.player1 !== "null"
+        ? (() => {
+            done = true;
+            copy[player] = score;
+          })()
+        : (done = false);
+    }
+
+    if (done) {
+      switch (true) {
+        case copy.player1 * 1 === copy.player2 * 1:
+          winner = "draw";
+          break;
+        case copy.player1 * 1 > copy.player2 * 1:
+          winner = "player1";
+          break;
+        case copy.player1 * 1 < copy.player2 * 1:
+          winner = "player2";
+          break;
+
+        default:
+          break;
+      }
+    }
 
     const updatedGame = await Game.findByIdAndUpdate(
       id,
       {
-        progress: req.body.progress,
+        progress: { ...progress, [player]: score },
         done,
+        winner,
       },
       { new: true }
     );
+
+    if (done) {
+      if (winner === "player1") {
+        await User.findByIdAndUpdate(updatedGame.player1, {
+          $inc: { points: 500 },
+        });
+        await User.findByIdAndUpdate(updatedGame.player2, {
+          $inc: { points: -200 },
+        });
+      } else {
+        await User.findByIdAndUpdate(updatedGame.player2, {
+          $inc: { points: 500 },
+        });
+        await User.findByIdAndUpdate(updatedGame.player1, {
+          $inc: { points: -200 },
+        });
+      }
+    }
 
     res.json(updatedGame);
   } catch (err) {
@@ -51,8 +108,9 @@ const fetchGames = async (req, res, next) => {
   try {
     const games = await Game.find({
       $or: [{ player1: req.params.id }, { player2: req.params.id }],
-    }).populate(["player1", "player2"]);
-
+    })
+      .populate(["player1", "player2"])
+      .sort({ cretedAt: -1 });
     console.log({ games });
 
     res.json(games);

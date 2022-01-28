@@ -8,7 +8,7 @@ var UserSchema = mongoose.Schema({
   email: { type: String, require: true, unique: true },
   password: { type: String, require: true },
   points: {
-    type: String,
+    type: Number,
     default: 0,
   },
   friends: [
