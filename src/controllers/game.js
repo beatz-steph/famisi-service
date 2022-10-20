@@ -25,7 +25,6 @@ const startGame = async (req, res, next) => {
 const updateGame = async (req, res, next) => {
   try {
     const { id, player, score } = req.body;
-    console.log({ id, player, score });
     if (!id || !player || !score) {
       return next("Incomplete info");
     }
