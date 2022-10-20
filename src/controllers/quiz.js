@@ -18,6 +18,19 @@ const addQuiz = async (req, res, next) => {
   }
 };
 
+const addQuizBatch = async (req, res, next) => {
+  const { difficulty, quizes } = req.body;
+  try {
+    quizes?.map(async (item) => {
+      await Quiz.create({ ...item, difficulty });
+    });
+
+    res.json({ message: "added succesfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const editQuiz = async (req, res, next) => {
   const { id } = req.params;
 
@@ -40,4 +53,4 @@ const deleteQuiz = async (req, res, next) => {
   }
 };
 
-module.exports = { getQuiz, addQuiz, editQuiz, deleteQuiz };
+module.exports = { getQuiz, addQuiz, editQuiz, deleteQuiz, addQuizBatch };

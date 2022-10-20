@@ -3,6 +3,7 @@ require("dotenv").config();
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
+var cors = require("cors");
 var morgan = require("morgan");
 var config = require("./src/config/database");
 var database = require("./src/config/database");
@@ -13,6 +14,7 @@ var parseToken = require("./src/middleware/parsetoken.middleware");
 database.connect();
 
 app.set("superSecret", config.secret); // req config.secret or process.env.APP_SECRET where app is not present
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

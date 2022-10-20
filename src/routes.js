@@ -22,6 +22,7 @@ module.exports = function (express, app) {
   apiRoutes.post("/friends/add", Game.addFriend);
   apiRoutes.get("/quiz", Quiz.getQuiz);
   apiRoutes.post("/quiz/new", Quiz.addQuiz);
+  apiRoutes.post("/quiz/batch", Quiz.addQuizBatch);
   apiRoutes.post("/quiz/:id", Quiz.editQuiz);
   apiRoutes.delete("/quiz/:id", Quiz.deleteQuiz);
 
